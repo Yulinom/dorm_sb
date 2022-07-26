@@ -2,6 +2,7 @@ package ml.ulinom.dorm.service;
 
 import ml.ulinom.dorm.entity.Student;
 import com.baomidou.mybatisplus.extension.service.IService;
+import ml.ulinom.dorm.utils.ResultVO;
 
 /**
  * <p>

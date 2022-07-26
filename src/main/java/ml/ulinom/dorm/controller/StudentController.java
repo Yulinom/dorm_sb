@@ -6,18 +6,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
 import ml.ulinom.dorm.entity.Student;
 import ml.ulinom.dorm.entity.vo.StudentQueryVO;
 import ml.ulinom.dorm.service.StudentService;
+import ml.ulinom.dorm.utils.ExcelUtils;
 import ml.ulinom.dorm.utils.ResultVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -130,5 +130,27 @@ public class StudentController {
         } else return ResultVO.error();
     }
 
-}
+    @PostMapping("/addExcel")
+    @ResponseBody
+    public ResultVO addExcel(@RequestParam(value = "file") MultipartFile file) {
+        ResultVO resultVO = ResultVO.ok();
+        try {
+            List<List<Object>> lists = ExcelUtils.getUserListByExcel(file.getInputStream(), file.getOriginalFilename());
+            //List<List<Object>>--->List<Student>
+            List<Student> students = new ArrayList<>();
+            //List<Object>
+            for (List<Object> ob : lists) {
+                Student student = new Student(ob.get(0).toString(), ob.get(1).toString());
+                students.add(student);
+            }
+            System.out.println(students);
+            if (studentService.saveBatch(students)) {
+                return ResultVO.ok().message("添加成功");
+            } else return ResultVO.error();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resultVO;
+    }
 
+}
