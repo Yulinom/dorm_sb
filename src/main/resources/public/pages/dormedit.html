@@ -6,11 +6,27 @@
     <script type="text/javascript" src="/js/include.js"></script>
 </head>
 <body>
+<!--输入弹出窗-->
+<form class="layui-form" id="bill" style="display:none" method="get" action="/dorm/dormsert/edit">
+    <div class="layui-form-item" style="padding-top: 10px">
+        <input type="text" style="display: none" name="id" id="tid" style="width:200px">
+        <label class="layui-form-label">水费</label>
+        <div class="layui-input-block">
+            <input type="text" name="water" autocomplete="off" class="layui-input" id="water" style="width:150px">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电费</label>
+        <div class="layui-input-block">
+            <input type="text" name="ele" autocomplete="off" class="layui-input" id="ele" style="width:150px">
+        </div>
+    </div>
+</form>
 
-<table id="demo" lay-filter="test"></table>
+<table id="edit" lay-filter="test"></table>
 
 <script type="text/html" id="toolEventDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">宿舍编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">水电费编辑</a>
 </script>
 
 <script type="text/html" id="operationBar">
@@ -19,15 +35,15 @@
         <form class="layui-form">
             <div class="layui-col-md9">
                 <div class="layui-inline">
-                    <label class="layui-form-label">学生ID</label>
+                    <label class="layui-form-label">宿舍id</label>
                     <div class="layui-input-inline">
                         <input type="text" id="id" name="id" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label" style="white-space:nowrap">学生姓名</label>
+                    <label class="layui-form-label" style="white-space:nowrap">宿舍号</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="studentName" name="studentName" autocomplete="off" class="layui-input">
+                        <input type="text" id="dormnumber" name="number" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
@@ -50,16 +66,17 @@
 
         //第一个实例
         table.render({
-            elem: '#demo'
+            elem: '#edit'
             , toolbar: '#operationBar'
-            , height: 312
-            , url: '/dorm/student/pageStudent' //数据接口
+            , height: 500
+            , url: '/dorm/dormset/pagedorm' //数据接口
             , page: true //开启分页
             , cols: [[ //表头
                 {type: 'checkbox', fixed: 'left'}
-                , {field: 'id', title: 'ID', width: 150, sort: true, fixed: 'left', align: 'center'}
-                , {field: 'studentName', title: '学生名', align: 'center'}
-                , {field: 'dormId', title: '宿舍ID', align: 'center'}
+                , {field: 'id', title: '宿舍ID', width: 150, sort: true, fixed: 'left', align: 'center'}
+                , {field: 'dormNumber', title: '宿舍号', align: 'center'}
+                , {field: 'waterBill', title: '水费', align: 'center'}
+                , {field: 'electricBill', title: '电费', align: 'center'}
                 , {title: '操作', toolbar: '#toolEventDemo', align: 'center'}
             ]]
             , parseData: function (res) { //res 即为原始返回的数据
@@ -80,57 +97,67 @@
             var newdormid = data1.id; //获得当前行 tr 的 DOM 对象（如果有的话）
 
             if (layEvent === 'edit') { //编辑
+                $('#water').val(data1.waterBill);
+                $('#ele').val(data1.electricBill);
+                $('#tid').val(data1.id);
                 layer.prompt({
                     formType: 2,
-                    value: data1.dormid,
-                    title: '请输入宿舍id',
-                    area: ['400px', '100px'] //自定义文本域宽高
-                }, function(value, index, elem){
-                    newdormid = value;
+                    title: '水电编辑',
+                    content: $('#bill'),
+                    area: ['400px', '100px'],//自定义文本域宽高
+                    btn: ['确定', '取消']
+                    , yes: function (value, index, elem) {
 
-                    layer.close(index);
-                    $.ajax({
-                        url: '/dorm/dormset/edit',
-                        type: 'POST',
-                        data: {
-                            id: data1.id,
-                            dormid: newdormid,
-                        },
-                        success: function (res) {
-                            if (res.code == '0') {
-                                layer.alert(res.msg);
-                                setTimeout(function () {
-                                    location.reload();
-                                }, 1000)
-                            } else {
-                                layer.alert(res.msg);
-                            }
+                        var water = $('#water').val().trim();
+                        var ele = $('#ele').val().trim();
+                        if (water >= 0 && ele >= 0) {
+                            //提交表格内容
+                            $.ajax({
+                                async: false,
+                                url: '/dorm/dormset/edit',
+                                type: 'POST',
+                                data: {
+                                    id: data1.id,
+                                    water: water,
+                                    ele: ele
+                                }, dataType: 'json'
+                                , success: function (res) {
+                                    if (res.code == '0') {
+                                        layer.alert("msg:" + res.msg);
+                                        setTimeout(function () {
+                                            location.reload();
+                                        }, 100)
+                                    } else {
+                                        layer.alert("msg:" + res.msg);
+                                    }
+                                }
+                            });
+                            layer.close(index);
                         }
-
-                    });
-
+                    }
                 });
-
+                console.log(data1)
             }
 
-            $("body").on('click', '#searchBtn', function () {
-                var studentName = $('#studentName').val();
-                var id = $('#id').val();
-                var studentQueryVO = {
-                    'studentName': studentName
-                    , 'id': id
-                }
 
-                table.reload('demo', {
-                    method: 'post'
-                    , url: '/dorm/student/pageStudentCondition'
-                    , contentType: 'application/json'
-                    , where: studentQueryVO
-                    , page: {
-                        curr: 1
-                    }
-                })
-            });
+        });
+        $("body").on('click', '#searchBtn', function () {
+            var dormnumber = $('#dormnumber').val();
+            var id = $('#id').val();
+            var DormQueryVO = {
+                'id': id,
+                'dormnumber': dormnumber
+            }
+            console.log(DormQueryVO);
+            table.reload('edit', {
+                method: 'post'
+                , url: '/dorm/dormset/pageDormCondition'
+                , contentType: 'application/json'
+                , where: DormQueryVO
+                , page: {
+                    curr: 1
+                }
+            })
         });
     })
 </script>
