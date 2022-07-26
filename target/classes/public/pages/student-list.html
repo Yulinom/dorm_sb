@@ -149,9 +149,6 @@
                         }
                     })
 
-                    table.reloadData(id, {
-                        scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
-                    });
                 });
             } else if (layEvent === 'edit') { //编辑
                 //预填充表单
@@ -160,7 +157,7 @@
                 document.getElementById("dormId1").value=data.dormId;
                 var index = layer.prompt({
                     type:1,
-                    title:'增加学生',
+                    title:'编辑学生信息',
                     area:['500px','300px'],
                     content: $("#updateForm"),
                     btn: ['确定', '取消'],
@@ -186,9 +183,6 @@
                                     }
                                 }
                             })
-                            table.reloadData(id, {
-                                scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
-                            });
                             layer.close(index)
                         }else {
                             layer.alert("请填写完整")
