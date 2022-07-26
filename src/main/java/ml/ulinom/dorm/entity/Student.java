@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -18,6 +17,9 @@ import lombok.experimental.Accessors;
  * @since 2022-07-25
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="Student对象", description="")
@@ -29,9 +31,11 @@ public class Student implements Serializable {
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
+    @NonNull
     @ApiModelProperty(value = "学生名")
     private String studentName;
 
+    @NonNull
     @ApiModelProperty(value = "宿舍标识")
     private String dormId;
 

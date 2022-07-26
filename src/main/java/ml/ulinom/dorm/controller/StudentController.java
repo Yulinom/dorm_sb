@@ -113,5 +113,22 @@ public class StudentController {
         } else return ResultVO.error();
     }
 
+    @PostMapping("/addStudent")
+    @ResponseBody
+    public ResultVO addStudent(String sName, String dormId){
+        Student student = new Student(sName, dormId);
+        if (studentService.save(student)) {
+            return ResultVO.ok().message("学生添加成功");
+        } else return ResultVO.error();
+    }
+
+    @PostMapping("/updateStudent")
+    public ResultVO updateStudent(String id, String sName, String dormId){
+        Student student = new Student(id, sName, dormId);
+        if (studentService.updateById(student)) {
+            return ResultVO.ok().message("修改成功");
+        } else return ResultVO.error();
+    }
+
 }
 
