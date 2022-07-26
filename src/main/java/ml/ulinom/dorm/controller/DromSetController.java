@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class DromSetController {
     //修改学生宿舍
     @ApiOperation(value = "修改学生宿舍属性值")
     @PostMapping("/edit")
-    public ResultVO Dormset( String id ,String dormid) {
+    public void Dormset( String id ,String dormid) {
 
         UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id",id);
@@ -109,6 +110,5 @@ public class DromSetController {
         boolean rows = stuSer.update(stu,updateWrapper);
         System.out.println("rows = " + rows);
 
-        return ResultVO.ok();
     }
 }
