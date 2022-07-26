@@ -96,13 +96,17 @@
                             id: data1.id,
                             dormid: newdormid,
                         },
-                        success: function () {
-                            layer.msg(data1);
+                        success: function (res) {
+                            if (res.code == '0') {
+                                layer.alert(res.msg);
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 1000)
+                            } else {
+                                layer.alert(res.msg);
+                            }
                         }
 
-                    });
-                    table.reloadData('demo', {
-                        scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
                     });
 
                 });
