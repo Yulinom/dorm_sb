@@ -152,5 +152,13 @@ public class StudentController {
         }
         return resultVO;
     }
-
+    @GetMapping("/findRoommates")
+    public ResultVO findRoommates(String id) {
+        QueryWrapper<Student> wrapper = new QueryWrapper<>();
+        wrapper.inSql("dorm_id", "SELECT dorm_id FROM student WHERE id = " + id);
+        List<Student> list = studentService.list(wrapper);
+        Map map = new HashMap();
+        map.put("item", list);
+        return ResultVO.ok().data(map);
+    }
 }
