@@ -52,17 +52,20 @@
 
 <script type="text/html" id="operationBar">
     <div class="layui-row">
-        <div class="layui-col-md3">
+        <div class="layui-col-md5">
             <button type="button" class="layui-btn layui-btn-danger"
                     id="deleteObjectsByIdList" style="margin-left: 20px; margin-top: 20px">批量移除
             </button>
             <button type="button" class="layui-btn layui-btn-normal"
                     id="addStudent" style="margin-left: 10px; margin-top: 20px">增加学生
             </button>
+            <button type="button" class="layui-btn" id="upload" style="margin-left: 10px; margin-top: 20px">
+                <i class="layui-icon">&#xe67c;</i>上传Excel
+            </button>
         </div>
 
         <form class="layui-form">
-            <div class="layui-col-md9">
+            <div class="layui-col-md7">
                 <div class="layui-inline">
                     <label class="layui-form-label">学生ID</label>
                     <div class="layui-input-inline">
@@ -146,9 +149,6 @@
                         }
                     })
 
-                    table.reloadData(id, {
-                        scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
-                    });
                 });
             } else if (layEvent === 'edit') { //编辑
                 //预填充表单
@@ -157,7 +157,7 @@
                 document.getElementById("dormId1").value=data.dormId;
                 var index = layer.prompt({
                     type:1,
-                    title:'增加学生',
+                    title:'编辑学生信息',
                     area:['500px','300px'],
                     content: $("#updateForm"),
                     btn: ['确定', '取消'],
@@ -183,9 +183,6 @@
                                     }
                                 }
                             })
-                            table.reloadData(id, {
-                                scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
-                            });
                             layer.close(index)
                         }else {
                             layer.alert("请填写完整")
@@ -283,6 +280,34 @@
                         layer.alert("请填写完整")
                         layer.title("提醒")
                     }
+                }
+            });
+        });
+        //上传Excel
+        layui.use('upload', function(){
+            var upload = layui.upload;
+
+            var uploadInst = upload.render({
+                elem: '#upload' //绑定元素
+                ,url: '/dorm/student/addExcel' //上传接口
+                ,accept: "file"
+                ,method: "POST"
+                ,field: "file"
+                ,exts: "xls|xlsx"
+                ,size: 10
+                ,done: function(res){  //上传完成回调
+                    if(res.code == "0"){
+                        layer.alert("上传成功");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000)
+                    }else {
+                        layer.alert(res.msg);
+                    }
+                }
+                ,error: function(){
+                    layer.closeAll('loading');
+                    layer.alert('网络异常，请稍后重试！');
                 }
             });
         });
