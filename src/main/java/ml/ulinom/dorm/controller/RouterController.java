@@ -23,4 +23,9 @@ public class RouterController {
     public String studentList() {
         return "student-list";
     }
+
+    @RequestMapping("/dorm-edit")
+    public String dormEdit() {
+        return "dormedit";
+    }
 }
