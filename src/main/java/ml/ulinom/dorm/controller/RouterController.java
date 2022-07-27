@@ -38,4 +38,9 @@ public class RouterController {
     public String roommates() {
         return "roommates";
     }
+
+    @RequestMapping("/dormmates")
+    public String dormmates() {
+        return "dormmates";
+    }
 }
