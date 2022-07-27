@@ -38,9 +38,4 @@ public class RouterController {
     public String roommates() {
         return "roommates";
     }
-
-    @RequestMapping("/index")
-    public String index1() {
-        return "index";
-    } /*动态访问index*/
 }

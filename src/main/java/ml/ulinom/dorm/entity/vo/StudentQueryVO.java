@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 @ToString(callSuper = true)
-public class StudentQueryVO extends ObjectVO{
+public class StudentQueryVO extends QueryVO {
     private String id;
     private String studentName;
 }
