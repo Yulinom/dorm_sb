@@ -101,7 +101,7 @@ public class DromSetController {
         return ResultVO.ok().data(map);
     }
 
-    @ApiOperation("修改学生宿舍属性值")
+    @ApiOperation("修改学生水电值")
     @PostMapping({"/edit"})
     public ResultVO Dormset(String id, String water, String ele) {
         UpdateWrapper<Dorm> updateWrapper = new UpdateWrapper();

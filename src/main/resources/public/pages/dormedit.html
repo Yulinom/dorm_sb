@@ -93,7 +93,7 @@
             var data1 = obj.data; //获得当前行数据
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
             var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
-            var newdormid = data1.id; //获得当前行 tr 的 DOM 对象（如果有的话）
+            var newdormid = data1.id;
 
             if (layEvent === 'edit') { //编辑
                 $('#water').val(data1.waterBill);
