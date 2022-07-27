@@ -3,6 +3,7 @@ package ml.ulinom.dorm.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import ml.ulinom.dorm.entity.Student;
+import ml.ulinom.dorm.entity.vo.TransferVO;
 import ml.ulinom.dorm.service.DormService;
 import ml.ulinom.dorm.service.StudentService;
 import ml.ulinom.dorm.utils.ResultVO;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -65,7 +67,7 @@ public class DormController {
         } else return ResultVO.error();
     }
 
-    @PostMapping("/autoAddStudents")
+    @PutMapping("/autoAddStudents")
     public ResultVO autoAddStudents(String ids, Integer count) {
         String[] idList = ids.split(",");
         QueryWrapper<Student> wrapper = new QueryWrapper<Student>().eq("dorm_id", "-1");
@@ -75,8 +77,32 @@ public class DormController {
         if (needCount > studentList.size())
             return ResultVO.error().message("人数不足，可分配学生人数为：" + studentList.size());
         else {
+            for (String s : idList) {
+                for (Student student : studentList) {
+                    student.setDormId(s);
+                    studentService.updateById(student);
+                }
+            }
             return ResultVO.ok();
         }
+    }
+
+    @GetMapping("/isAddStudent")
+    public ResultVO isAddStudent(){
+        QueryWrapper<Student> wrapper = new QueryWrapper<Student>().eq("dorm_id", -1);
+        List<Student> students = studentService.list(wrapper);
+        return ResultVO.ok().data("item",students);
+    }
+
+    @PutMapping("/addStudents")
+    public ResultVO addStudents(@RequestBody TransferVO vo){
+        List<Map> data = vo.getGetData();
+        Student student = new Student();
+        for (Map map : data) {
+            student.setId((String) map.get("value")).setDormId(vo.getDormId());
+            studentService.updateById(student);
+        }
+        return ResultVO.ok();
     }
 }
 
