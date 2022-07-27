@@ -1,13 +1,23 @@
 package ml.ulinom.dorm.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import ml.ulinom.dorm.entity.Student;
+import ml.ulinom.dorm.service.DormService;
+import ml.ulinom.dorm.service.StudentService;
+import ml.ulinom.dorm.utils.ResultVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author ulinom
@@ -16,6 +26,57 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/dorm/dorm")
 public class DormController {
+    @Autowired
+    private DormService dormService;
+    @Autowired
+    private StudentService studentService;
 
+    @GetMapping("/{id}")
+    public ResultVO dormMates(@PathVariable String id) {
+        QueryWrapper<Student> studentQueryWrapper = new QueryWrapper<>();
+        studentQueryWrapper.eq("dorm_id", id);
+        List<Student> students = studentService.list(studentQueryWrapper);
+        return ResultVO.ok().data("item", students);
+    }
+
+    @DeleteMapping("/removeList")
+    public ResultVO removeStudentList(@RequestBody String ids) {
+        String[] idList = ids.split(",");
+        Student student = new Student();
+
+        for (String s : idList) {
+            student.setId(s);
+            student.setDormId("-1");
+            if (!studentService.updateById(student)) {
+                //TODO 这里应该配置事务
+                break;
+            }
+        }
+        return ResultVO.ok();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResultVO removeStudent(@PathVariable String id) {
+        Student student = new Student();
+        student.setId(id);
+        student.setDormId("-1");
+        if (studentService.updateById(student)) {
+            return ResultVO.ok();
+        } else return ResultVO.error();
+    }
+
+    @PostMapping("/autoAddStudents")
+    public ResultVO autoAddStudents(String ids, Integer count) {
+        String[] idList = ids.split(",");
+        QueryWrapper<Student> wrapper = new QueryWrapper<Student>().eq("dorm_id", "-1");
+        List<Student> studentList = studentService.list(wrapper);
+
+        int needCount = idList.length * count;
+        if (needCount > studentList.size())
+            return ResultVO.error().message("人数不足，可分配学生人数为：" + studentList.size());
+        else {
+            return ResultVO.ok();
+        }
+    }
 }
 

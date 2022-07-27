@@ -23,17 +23,25 @@
     </div>
 </form>
 
+<input type="number" style="display: none" name="addCount" id="addCount" class="layui-input">
+
 <table id="edit" lay-filter="test"></table>
 
 <script type="text/html" id="toolEventDemo">
     <a class="layui-btn layui-btn-xs" lay-event="edit">水电费编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="roommates">查看舍员</a>
 </script>
 
 <script type="text/html" id="operationBar">
     <div class="layui-row">
+        <div class="layui-col-md5">
+            <button type="button" class="layui-btn layui-btn-normal"
+                    id="autoAdd" style="margin-left: 10px; margin-top: 20px">智能录入
+            </button>
+        </div>
 
         <form class="layui-form">
-            <div class="layui-col-md9">
+            <div class="layui-col-md7">
                 <div class="layui-inline">
                     <label class="layui-form-label">宿舍id</label>
                     <div class="layui-input-inline">
@@ -68,7 +76,7 @@
         table.render({
             elem: '#edit'
             , toolbar: '#operationBar'
-            , url: '/dorm/student/pageStudent' //数据接口
+            , url: '/dorm/dormset/pagedorm' //数据接口
             , page: true //开启分页
             , cols: [[ //表头
                 {type: 'checkbox', fixed: 'left'}
@@ -136,6 +144,22 @@
                     }
                 });
                 console.log(data1)
+            } else if (layEvent === 'roommates') {//查舍友
+                layer.open({
+                    title: '舍员',
+                    area: ['800px', '400px'],
+                    type: 2,
+                    content: 'dormmates/' + data1.id,
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        var iframeWin = window[layero.find('iframe')[0]['name']];
+                        iframeWin.init(data1.id);
+                    },
+                    cancel: function (index, layern) {
+                        layer.close(index);
+                    }
+                });
             }
 
 
@@ -145,7 +169,7 @@
             var id = $('#id').val();
             var DormQueryVO = {
                 'id': id,
-                'dormnumber': dormnumber
+                'dormNumber': dormnumber
             }
             console.log(DormQueryVO);
             table.reload('edit', {
@@ -157,6 +181,52 @@
                     curr: 1
                 }
             })
+        });
+
+        $('#autoAdd').on('click', function () { //获取选中数据
+            var checkStatus = table.checkStatus('edit')
+                , data = checkStatus.data, ids = '';
+            if (data.length == 0) {
+                layer.msg('请先选择要分配的宿舍数据行！', {icon: 2});
+                return;
+            }
+            for (var i = 0; i < data.length; i++) {
+                ids += data[i].id + ","; //没有使用json数组，拼接的字符窜，需要接收后处理
+            }
+            var index = layer.prompt({
+                type: 1,
+                title: '录入舍员数',
+                area: ['500px', '300px'],
+                content: $("#addCount"),
+                btn: ['确定', '取消'],
+                yes: function () {
+                    var addCount = $("#addCount").val().trim();
+                    if (addCount.length>0) {
+                        $.ajax({
+                            async: false
+                            , url: '/dorm/dorm/autoAddStudents'
+                            , type: 'POST'
+                            , data: {"ids": ids, "count": addCount}
+                            , dataType: 'json'
+                            , success: function (res) {
+                                if (res.code == '0') {
+                                    layer.alert(res.msg);
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 1000)
+                                } else {
+                                    layer.alert(res.msg);
+                                }
+                            }
+                        })
+                        layer.close(index)
+                    } else {
+                        layer.alert("请填写完整")
+                        layer.title("提醒")
+                    }
+                }
+            });
+
         });
     })
 </script>

@@ -1,8 +1,12 @@
 package ml.ulinom.dorm.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
@@ -37,5 +41,11 @@ public class RouterController {
     @RequestMapping("/roommates")
     public String roommates() {
         return "roommates";
+    }
+
+    @RequestMapping("/dormmates/{id}")
+    public String dormmates(@PathVariable String id, Model model) {
+        model.addAttribute("id",id);
+        return "dormmates";
     }
 }
