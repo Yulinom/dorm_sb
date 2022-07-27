@@ -2,6 +2,8 @@ package ml.ulinom.dorm.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
@@ -9,13 +11,22 @@ import java.util.UUID;
 @Controller
 public class LoginController {
 
-    @RequestMapping("/login")
-    public String longin(String user, String password, HttpSession session) {
-        session.setAttribute("token", UUID.randomUUID());
+//    @RequestMapping("/login")
+    @RequestMapping(value = "/login",method = {RequestMethod.GET,RequestMethod.POST})
+    public ModelAndView longin(String user, String password, HttpSession session) {
+//        session.setAttribute("token", UUID.randomUUID());   写在这里的话账号密码是否符合都会登录成功
         if (user.equals("admin") && password.equals("admin")) {
-            return "index";
-        } else return "login";
-
+            session.setAttribute("token", UUID.randomUUID());
+//            return "/index";  采用post方法不能这样请求转发
+            return new ModelAndView("redirect:/index");
+        }
+//        else return "login";  采用post方法不能这样请求转发
+        return new ModelAndView("redirect:/ini");
+    }
+    @RequestMapping("/logout")
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "login";
     }
 
 }
