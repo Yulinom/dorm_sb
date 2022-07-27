@@ -18,8 +18,4 @@ public class LoginController {
 
     }
 
-    @RequestMapping("/ini")
-    public String index() {
-        return "login";
-    }
 }

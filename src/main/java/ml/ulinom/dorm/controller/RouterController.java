@@ -23,7 +23,12 @@ public class RouterController {
     public String studentList() {
         return "student-list";
     }
-
+    /*登陆*/
+    @RequestMapping("/ini")
+    public String index() {
+        return "login";
+    }
+    /*宿舍修改水电路径*/
     @RequestMapping("/dorm-edit")
     public String dormEdit() {
         return "dormedit";
