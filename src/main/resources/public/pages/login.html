@@ -3,7 +3,9 @@
 <head>
     <title>Title</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <script type="text/javascript" src="/js/include.js"></script>
+    <link rel="stylesheet" href="../../static/layui/css/layui.css">
 </head>
 
 <style>
@@ -14,10 +16,11 @@
         width: 400px;
     }
 </style>
-<body>
-<div class="checkin">
 
-    <form class="layui-form" action="/login" type="POST">
+<body>
+<img src="../../static/images/bg.jpg" style="position: absolute;width: 100%;height: 100%">
+<div class="checkin">
+    <form class="layui-form" action="/login" type="get">
         <div class="layui-form-item">
             <label class="layui-form-label">账号</label>
             <div class="layui-input-inline">
