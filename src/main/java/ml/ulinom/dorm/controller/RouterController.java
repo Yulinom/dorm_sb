@@ -28,4 +28,9 @@ public class RouterController {
     public String dormEdit() {
         return "dormedit";
     }
+
+    @RequestMapping("/roommates")
+    public String roommates() {
+        return "roommates";
+    }
 }

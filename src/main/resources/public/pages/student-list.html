@@ -48,6 +48,7 @@
     <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="roommates">can can need roommates</a>
 </script>
 
 <script type="text/html" id="operationBar">
@@ -208,7 +209,13 @@
                   scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
                 });
                 */
-            }
+            }else if(layEvent === 'roommates'){//查舍友
+                layer.open({
+                    title:'舍友',
+                    area: ['800px', '400px'],
+                    type: 2,
+                    content: '/roommates?id=' + data.id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });}
         });
 
         $('#deleteObjectsByIdList').on('click', function () { //获取选中数据

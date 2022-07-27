@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>舍友</title>
+    <script type="text/javascript" src="/js/include.js"></script>
+    <script>
+        let url = window.location.search //获取url中"?"符后的字串 ('?modFlag=business&role=1')
+        console.log(url);
+        var theRequest = new Object()
+        if (url.indexOf('?') != -1) {
+            let str = url.substr(1) //substr()方法返回从参数值开始到结束的字符串；
+            let strs = str.split('&')
+            for(let i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split('=')[0]] = strs[i].split('=')[1]
+            }
+        }
+        this.hrefSerch = theRequest
+        console.log(theRequest);
+        console.log(theRequest["id"]);
+    </script>
+</head>
+<body>
+<table id="demo" lay-filter="test"></table>
+<script>
+    var table = layui.table;
+    table.render({
+        elem: '#demo'
+        , height: 312
+        , url: '/dorm/student/findRoommates?id=' + theRequest["id"] //数据接口
+        , cols: [[ //表头
+            {field: 'id', title: 'ID', width: 150, sort: true, fixed: 'left', align: 'center'}
+            , {field: 'studentName', title: '学生名', align: 'center'}
+            , {field: 'dormId', title: '宿舍ID', align: 'center'}
+        ]]
+        , parseData: function (res) { //res 即为原始返回的数据
+            return {
+                "code": res.code, //解析接口状态
+                "msg": res.msg, //解析提示文本
+                "count": res.data.count, //解析数据长度
+                "data": res.data.item //解析数据列表
+            };
+        }
+    });
+</script>
+</body>
+</html>
