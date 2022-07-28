@@ -2,6 +2,7 @@ package ml.ulinom.dorm.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import ml.ulinom.dorm.entity.Dorm;
 import ml.ulinom.dorm.entity.Student;
 import ml.ulinom.dorm.entity.vo.TransferVO;
 import ml.ulinom.dorm.service.DormService;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -103,6 +105,20 @@ public class DormController {
             studentService.updateById(student);
         }
         return ResultVO.ok();
+    }
+
+    @GetMapping("/show")
+    public ResultVO show(){
+        QueryWrapper<Dorm> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id", "dorm_number title");
+        List<Map<String, Object>> dorms = dormService.listMaps(queryWrapper);
+
+        HashMap<String, Object> checked = new HashMap<>();
+        checked.put("id","-1");
+        checked.put("title","暂不分配");
+
+        dorms.add(0,checked);
+        return ResultVO.ok().data("item",dorms);
     }
 }
 

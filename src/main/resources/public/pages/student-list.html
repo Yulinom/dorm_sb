@@ -97,6 +97,7 @@
         var table = layui.table;
         var form = layui.form;
         var $ = layui.$;
+        var dropdown = layui.dropdown;
 
         form.render();
 
@@ -110,7 +111,12 @@
                 {type: 'checkbox', fixed: 'left'}
                 , {field: 'id', title: 'ID', width: 150, sort: true, fixed: 'left', align: 'center'}
                 , {field: 'studentName', title: '学生名', align: 'center'}
-                , {field: 'dormId', title: '宿舍ID', align: 'center'}
+                , {
+                    field: 'dormId', title: '宿舍ID', align: 'center', templet: function (d) {
+                        //得到当前行数据，并拼接成自定义模板
+                        return d.dormId === '-1' ? '未分配' : d.dormId
+                    }
+                }
                 , {title: '操作', toolbar: '#toolEventDemo', align: 'center'}
             ]]
             , parseData: function (res) { //res 即为原始返回的数据
@@ -243,10 +249,35 @@
                 area: ['500px', '300px'],
                 content: $("#studentForm"),
                 btn: ['确定', '取消'],
+                success: //初演示 - 绑定输入框
+                    $.ajax({
+                        url: '/dorm/dorm/show'
+                        , type: 'get'
+                        , success: function (res) {
+                            if (res.code == '0') {
+                                dropdown.render({
+                                    elem: '#dormId'
+                                    , data: res.data.item
+                                    , parseData: function (res) { //res 即为原始返回的数据
+                                        return {
+                                            "title": res.data.item.dormNumber,
+                                            "id": res.data.item.id
+                                        };
+                                    }
+                                    , click: function (obj) {
+                                        this.elem.val(obj.title);
+                                    }
+                                    , style: 'width: 235px;'
+                                })
+                            } else {
+                                layer.msg(res.msg, {icon: 2, time: 3000})
+                            }
+                        }
+                    }),
                 yes: function () {
                     var name = $("#sName").val().trim();
                     var dorm = $("#dormId").val().trim();
-                    var args = {sName: name, dormId: dorm};
+                    var args = {sName: name, dormNumber: dorm};
                     if (name.length > 0 && dorm.length > 0) {
                         $.ajax({
                             async: false

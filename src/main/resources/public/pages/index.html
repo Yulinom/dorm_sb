@@ -161,6 +161,15 @@
             tabChange: function (id) {
                 // 切换到指定Tab项
                 element.tabChange('demo', id); // 根据传入的id传入到指定的tab项
+                //每次切换学生列表tab页面时刷新页面
+                if(id==11){
+                    var othis = $('.layui-tab-title').find('>li[lay-id="' + id + '"]'),
+                        index = othis.parent().children('li').index(othis),
+                        parents = othis.parents('.layui-tab').eq(0),
+                        item = parents.children('.layui-tab-content').children('.layui-tab-item'),
+                        src = item.eq(index).find('iframe').attr("src");
+                    item.eq(index).find('iframe').attr("src", src);
+                }
             },
             tabDelete: function (id) {
                 element.tabDelete("demo", id);// 删除

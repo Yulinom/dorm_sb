@@ -7,8 +7,10 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import ml.ulinom.dorm.entity.Dorm;
 import ml.ulinom.dorm.entity.Student;
 import ml.ulinom.dorm.entity.vo.StudentQueryVO;
+import ml.ulinom.dorm.service.DormService;
 import ml.ulinom.dorm.service.StudentService;
 import ml.ulinom.dorm.utils.ExcelUtils;
 import ml.ulinom.dorm.utils.ResultVO;
@@ -32,6 +34,8 @@ import java.util.*;
 public class StudentController {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private DormService dormService;
 
     @RequestMapping("/list")
     public ResultVO list(@RequestParam("page") String page, @RequestParam("limit") String limit) {
@@ -115,11 +119,22 @@ public class StudentController {
 
     @PostMapping("/addStudent")
     @ResponseBody
-    public ResultVO addStudent(String sName, String dormId){
-        Student student = new Student(sName, dormId);
-        if (studentService.save(student)) {
-            return ResultVO.ok().message("学生添加成功");
-        } else return ResultVO.error();
+    public ResultVO addStudent(String sName, String dormNumber) {
+        if (dormNumber.equals("暂不分配")) {
+            Student student = new Student(sName, "-1");
+            if (studentService.save(student)) {
+                return ResultVO.ok().message("学生添加成功");
+            } else return ResultVO.error();
+        } else {
+            QueryWrapper<Dorm> wrapper = new QueryWrapper<>();
+            wrapper.eq("dorm_number", dormNumber);
+            List<Dorm> list = dormService.list(wrapper);
+            if (list.size() <= 0) return ResultVO.error();
+            Student student = new Student(sName, list.get(0).getId());
+            if (studentService.save(student)) {
+                return ResultVO.ok().message("学生添加成功");
+            } else return ResultVO.error();
+        }
     }
 
     @PostMapping("/updateStudent")
