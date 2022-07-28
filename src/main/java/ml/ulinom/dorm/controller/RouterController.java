@@ -15,7 +15,6 @@ public class RouterController {
 
     @RequestMapping("/")
     public String index(HttpSession session) {
-        session.setAttribute("token", UUID.randomUUID());
         return "index";
     }
 
