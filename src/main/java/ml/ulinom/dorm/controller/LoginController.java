@@ -20,10 +20,10 @@ public class LoginController {
         if (user.equals("admin") && password.equals("admin")) {
             session.setAttribute("token", UUID.randomUUID());
 //            return "/index";  采用post方法不能这样请求转发
-            return "redirect:https://"+request.getServerName()+"/";
+            return "redirect:/";
         }
 //        else return "login";  采用post方法不能这样请求转发
-        return "redirect:https://"+request.getServerName()+"/login";
+        return "redirect:/login";
     }
     @RequestMapping("/logout")
     public String logout(HttpSession session){

@@ -70,35 +70,35 @@ public class StudentController {
     // 带条件分页查询讲师
     @ApiOperation(value = "带条件分页查询学生")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="page",value = "当前页"),
-            @ApiImplicitParam(name="limit",value = "每页记录")
+            @ApiImplicitParam(name = "page", value = "当前页"),
+            @ApiImplicitParam(name = "limit", value = "每页记录")
     })
     @PostMapping("/pageStudentCondition")
-    public ResultVO pageStudentCondition(@RequestBody(required = false) StudentQueryVO studentQueryVO){
+    public ResultVO pageStudentCondition(@RequestBody(required = false) StudentQueryVO studentQueryVO) {
         //创建page对象
-        Page<Student> studentPage =new Page<>(studentQueryVO.getPage(),studentQueryVO.getLimit());
+        Page<Student> studentPage = new Page<>(studentQueryVO.getPage(), studentQueryVO.getLimit());
         //构建条件
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
         //多条件组合查询
         String name = studentQueryVO.getStudentName();
         String id = studentQueryVO.getId();
         //判断条件值是否为空，如果不为空拼接条件
-        if(!StringUtils.isEmpty(name)){
-            wrapper.like("student_name",name);
+        if (!StringUtils.isEmpty(name)) {
+            wrapper.like("student_name", name);
         }
-        if(!StringUtils.isEmpty(id)){
+        if (!StringUtils.isEmpty(id)) {
             wrapper.eq("id", id);
         }
         //调用方法实现分页
         //调用方法时，底层封装，把分页所有数据封装到studentPage对象里面
-        studentService.page(studentPage,wrapper);
+        studentService.page(studentPage, wrapper);
         //总记录数
         long total = studentPage.getTotal();
         //数据list集合
         List<Student> records = studentPage.getRecords();
-        Map map=new HashMap();
-        map.put("count",total);
-        map.put("item",records);
+        Map map = new HashMap();
+        map.put("count", total);
+        map.put("item", records);
         return ResultVO.ok().data(map);
     }
 
@@ -138,7 +138,7 @@ public class StudentController {
     }
 
     @PostMapping("/updateStudent")
-    public ResultVO updateStudent(String id, String sName, String dormId){
+    public ResultVO updateStudent(String id, String sName, String dormId) {
         Student student = new Student(id, sName, dormId);
         if (studentService.updateById(student)) {
             return ResultVO.ok().message("修改成功");
@@ -155,7 +155,14 @@ public class StudentController {
             List<Student> students = new ArrayList<>();
             //List<Object>
             for (List<Object> ob : lists) {
-                Student student = new Student(ob.get(0).toString(), ob.get(1).toString());
+                Student student = new Student();
+
+                QueryWrapper<Dorm> wrapper = new QueryWrapper<>();
+                wrapper.eq("dorm_number", ob.get(1).toString());
+                List<Dorm> list = dormService.list(wrapper);
+                if (list.size() <= 0) student.setStudentName(ob.get(0).toString()).setDormId("-1");
+                else student.setStudentName(ob.get(0).toString()).setDormId(list.get(0).getId());
+
                 students.add(student);
             }
             System.out.println(students);
@@ -167,10 +174,11 @@ public class StudentController {
         }
         return resultVO;
     }
+
     @GetMapping("/findRoommates")
     public ResultVO findRoommates(String id) {
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
-        wrapper.inSql("dorm_id", "SELECT dorm_id FROM student WHERE dorm_id != "+"-1"+" and id = " + id);
+        wrapper.inSql("dorm_id", "SELECT dorm_id FROM student WHERE dorm_id != " + "-1" + " and id = " + id);
         List<Student> list = studentService.list(wrapper);
         Map map = new HashMap();
         map.put("item", list);
