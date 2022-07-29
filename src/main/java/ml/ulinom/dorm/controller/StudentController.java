@@ -155,7 +155,14 @@ public class StudentController {
             List<Student> students = new ArrayList<>();
             //List<Object>
             for (List<Object> ob : lists) {
-                Student student = new Student(ob.get(0).toString(), ob.get(1).toString());
+                Student student = new Student();
+
+                QueryWrapper<Dorm> wrapper = new QueryWrapper<>();
+                wrapper.eq("dorm_number", ob.get(1).toString());
+                List<Dorm> list = dormService.list(wrapper);
+                if (list.size() <= 0) student.setStudentName(ob.get(0).toString()).setDormId("-1");
+                else student.setStudentName(ob.get(0).toString()).setDormId(list.get(0).getId());
+
                 students.add(student);
             }
             System.out.println(students);
